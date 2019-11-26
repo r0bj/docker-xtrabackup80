@@ -21,7 +21,7 @@ function notify_prometheus {
 	if [ -n "$prometheus_pushgateway_url" ] && [ -n "$prometheus_job" ]; then
 		if [ "$success" -eq 1 ]; then
 			write_log "INFO: notify prometheus: backup success; duration: $duration"
-cat <<EOF | curl $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
+cat <<EOF | curl -v --max-time 60 $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
 # HELP xtrabackup_duration_seconds Duration of xtrabackup
 # TYPE xtrabackup_duration_seconds gauge
 xtrabackup_duration_seconds $duration
@@ -34,7 +34,7 @@ xtrabackup_last_success 1
 EOF
 		else
 			write_log "INFO: notify prometheus: backup failed"
-cat <<EOF | curl $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
+cat <<EOF | curl -v --max-time 60 $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
 # HELP xtrabackup_last_success Success of xtrabackup
 # TYPE xtrabackup_last_success gauge
 xtrabackup_last_success 0
@@ -55,6 +55,7 @@ bash /xtrabackup.sh
 if [ "$?" -eq 0 ]; then
 	duration=$(($(date +'%s') - $start_timastamp))
 	notify_prometheus 1 $duration
+	exit 0
 else
 	notify_prometheus 0
 	exit 1
