@@ -1,6 +1,6 @@
 #!/bin/bash
 
-prometheus_pushgateway_url=${PUSHGATEWAY_URL:-http://127.0.0.1:9091}
+prometheus_pushgateway_url=${PUSHGATEWAY_URL}
 prometheus_job=${PROMETHEUS_JOB:-xtrabackup}
 override_hostname=${OVERRIDE_HOSTNAME}
 auth_user=${BASIC_AUTH_USER}

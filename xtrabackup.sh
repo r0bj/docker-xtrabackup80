@@ -30,5 +30,5 @@ write_log "Running xtrabackup"
 xtrabackup --host=$mysql_host --user=$mysql_user --password=$mysql_password --backup --stream=xbstream --compress > $tmpfile
 
 write_log "Uploading archive to S3"
-s3cmd --access_key=$s3_access_key --secret_key=$s3_secret_key -m binary/octet-stream put $tmpfile $object
+AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws s3 cp $tmpfile $object --no-progress
 rm -f $tmpfile
