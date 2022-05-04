@@ -16,4 +16,4 @@ RUN microdnf install unzip hostname \
 COPY xtrabackup.sh /
 COPY backup.sh /
 
-CMD [ "/backup.sh" ]
+CMD ["/backup.sh"]
