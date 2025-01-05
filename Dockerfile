@@ -3,15 +3,14 @@ FROM percona/percona-xtrabackup:8.0.28
 
 # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
 # https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst
-ENV AWSCLI_VERSION 2.6.1
+ENV AWSCLI_VERSION=2.22.28
 
-RUN microdnf install unzip hostname \
-  && microdnf clean all \
-  && cd /root \
-  && curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip \
-  && unzip awscliv2.zip \
-  && ./aws/install \
-  && rm -f awscliv2.zip
+RUN microdnf install unzip hostname && \
+  microdnf clean all && \
+  curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o /tmp/awscliv2.zip && \
+  unzip -q /tmp/awscliv2.zip -d /tmp && \
+  /tmp/aws/install && \
+  rm -rf /tmp/aws /tmp/awscliv2.zip
 
 COPY xtrabackup.sh /
 COPY backup.sh /

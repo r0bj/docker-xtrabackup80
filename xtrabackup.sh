@@ -13,7 +13,7 @@ function write_log {
 	echo "`date +'%Y%m%d %H%M%S'`: $1"
 }
 
-if [ -z "$mysql_password" ] || [ -z "$s3_bucket" ] || [ -z "$s3_access_key" ] || [ -z "$s3_secret_key" ]; then
+if [[ -z "$mysql_password" || -z "$s3_bucket" || -z "$s3_access_key" || -z "$s3_secret_key" ]]; then
 	write_log "One or more parameter empty"
 	exit 1
 fi
