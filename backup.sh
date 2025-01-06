@@ -6,7 +6,7 @@ override_hostname=${OVERRIDE_HOSTNAME}
 auth_user=${BASIC_AUTH_USER}
 auth_password=${BASIC_AUTH_PASSWORD}
 
-function write_log {
+function log {
 	echo "`date +'%Y%m%d %H%M%S'`: $1"
 }
 
@@ -20,8 +20,8 @@ function notify_prometheus {
 
 	if [[ -n "$prometheus_pushgateway_url" && -n "$prometheus_job" ]]; then
 		if [[ "$success" -eq 1 ]]; then
-			write_log "INFO: notify prometheus: backup success; duration: $duration"
-cat <<EOF | curl -v --max-time 60 $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
+			log "Notifying prometheus: backup success; duration: ${duration}s"
+cat <<EOF | curl -o /dev/null -s -w "URL: %{url_effective}\nRemote IP: %{remote_ip}\nHTTP Code: %{http_code}\n" --max-time 60 $curl_opts -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
 # HELP xtrabackup_duration_seconds Duration of xtrabackup
 # TYPE xtrabackup_duration_seconds gauge
 xtrabackup_duration_seconds $duration
@@ -33,8 +33,8 @@ xtrabackup_last_success_timestamp_seconds $(date +%s.%7N)
 xtrabackup_last_success 1
 EOF
 		else
-			write_log "INFO: notify prometheus: backup failed"
-cat <<EOF | curl -v --max-time 60 $curl_opts -s -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
+			log "Notifying prometheus: backup failed"
+cat <<EOF | curl -o /dev/null -s -w "URL: %{url_effective}\nRemote IP: %{remote_ip}\nHTTP Code: %{http_code}\n" --max-time 60 $curl_opts -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
 # HELP xtrabackup_last_success Success of xtrabackup
 # TYPE xtrabackup_last_success gauge
 xtrabackup_last_success 0
