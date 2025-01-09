@@ -29,8 +29,13 @@ log "Running xtrabackup"
 xtrabackup --host=$mysql_host --user=$mysql_user --password=$mysql_password --backup --stream=xbstream --compress > $tmpfile
 log "Running xtrabackup done"
 
+export AWS_ACCESS_KEY_ID=$s3_access_key
+export AWS_SECRET_ACCESS_KEY=$s3_secret_key
+export AWS_RETRY_MODE=standard
+export AWS_MAX_ATTEMPTS=6
+
 log "Uploading file $tmpfile to $object"
-AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws s3 cp $tmpfile $object --no-progress
+aws s3 cp $tmpfile $object --no-progress
 log "Uploading file $tmpfile done"
 
 rm -f $tmpfile
