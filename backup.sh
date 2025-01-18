@@ -28,16 +28,16 @@ xtrabackup_duration_seconds $duration
 # HELP xtrabackup_last_success_timestamp_seconds Unixtime xtrabackup last succeeded
 # TYPE xtrabackup_last_success_timestamp_seconds gauge
 xtrabackup_last_success_timestamp_seconds $(date +%s.%7N)
-# HELP xtrabackup_last_success Success of xtrabackup
-# TYPE xtrabackup_last_success gauge
-xtrabackup_last_success 1
+# HELP xtrabackup_status Status of xtrabackup
+# TYPE xtrabackup_status gauge
+xtrabackup_status 1
 EOF
 		else
 			log "Notifying prometheus: backup failed"
 cat <<EOF | curl -o /dev/null -s -w "URL: %{url_effective}\nRemote IP: %{remote_ip}\nHTTP Code: %{http_code}\n" --max-time 60 $curl_opts -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
-# HELP xtrabackup_last_success Success of xtrabackup
-# TYPE xtrabackup_last_success gauge
-xtrabackup_last_success 0
+# HELP xtrabackup_status Status of xtrabackup
+# TYPE xtrabackup_status gauge
+xtrabackup_status 0
 EOF
 		fi
 	fi
